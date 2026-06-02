@@ -14,25 +14,55 @@
       min-height: 100vh;
     }
 
-    header {
-      text-align: center;
-      padding: 48px 24px 32px;
+    /* CAPA */
+    #hero {
+      position: relative;
+      width: 100%;
+      height: 70vh;
+      min-height: 380px;
+      background: #1a1a1a center/cover no-repeat;
+      display: flex;
+      align-items: flex-end;
     }
 
-    header h1 {
-      font-size: 2rem;
+    #hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.75) 100%);
+    }
+
+    #hero-content {
+      position: relative;
+      z-index: 1;
+      padding: 40px 48px;
+      width: 100%;
+    }
+
+    #hero-content h1 {
+      font-size: clamp(1.8rem, 5vw, 3.2rem);
       font-weight: normal;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.06em;
       color: #fff;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
     }
 
-    header p {
-      margin-top: 8px;
-      font-size: 0.95rem;
-      color: #aaa;
+    #hero-content p {
+      margin-top: 10px;
+      font-size: 1rem;
+      color: rgba(255,255,255,0.75);
+      letter-spacing: 0.08em;
+    }
+
+    #photo-count {
+      margin-top: 6px;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.5);
       letter-spacing: 0.05em;
+      font-family: sans-serif;
     }
 
+    /* GALERIA */
     #status {
       text-align: center;
       padding: 40px;
@@ -44,7 +74,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
       gap: 6px;
-      padding: 0 6px 48px;
+      padding: 6px 6px 48px;
     }
 
     .gallery-item {
@@ -62,15 +92,10 @@
       opacity: 0;
     }
 
-    .gallery-item img.loaded {
-      opacity: 1;
-    }
+    .gallery-item img.loaded { opacity: 1; }
+    .gallery-item:hover img { transform: scale(1.04); }
 
-    .gallery-item:hover img {
-      transform: scale(1.04);
-    }
-
-    /* Lightbox */
+    /* LIGHTBOX */
     #lightbox {
       display: none;
       position: fixed;
@@ -81,15 +106,12 @@
       justify-content: center;
     }
 
-    #lightbox.active {
-      display: flex;
-    }
+    #lightbox.active { display: flex; }
 
     #lightbox img {
       max-width: 92vw;
       max-height: 92vh;
       object-fit: contain;
-      border-radius: 2px;
     }
 
     #lightbox-close {
@@ -99,7 +121,6 @@
       font-size: 2rem;
       color: #fff;
       cursor: pointer;
-      line-height: 1;
       opacity: 0.7;
       transition: opacity 0.2s;
       background: none;
@@ -108,8 +129,7 @@
 
     #lightbox-close:hover { opacity: 1; }
 
-    #lightbox-prev,
-    #lightbox-next {
+    #lightbox-prev, #lightbox-next {
       position: fixed;
       top: 50%;
       transform: translateY(-50%);
@@ -124,9 +144,7 @@
       user-select: none;
     }
 
-    #lightbox-prev:hover,
-    #lightbox-next:hover { opacity: 1; }
-
+    #lightbox-prev:hover, #lightbox-next:hover { opacity: 1; }
     #lightbox-prev { left: 8px; }
     #lightbox-next { right: 8px; }
 
@@ -151,10 +169,13 @@
 </head>
 <body>
 
-<header>
-  <h1 id="gallery-name">MM Fotografia</h1>
-  <p id="gallery-date"></p>
-</header>
+<div id="hero">
+  <div id="hero-content">
+    <h1 id="gallery-name">MM Fotografia</h1>
+    <p id="gallery-date"></p>
+    <p id="photo-count"></p>
+  </div>
+</div>
 
 <div id="status">Carregando galeria...</div>
 <div class="gallery" id="gallery"></div>
@@ -170,18 +191,19 @@
 <footer>MM Fotografia</footer>
 
 <script>
-  const API_KEY = 'AIzaSyAWszEv-IAHz-D10CFyGaHwmhcUnzjNG44';
-  const params  = new URLSearchParams(window.location.search);
+  const API_KEY   = 'AIzaSyAWszEv-IAHz-D10CFyGaHwmhcUnzjNG44';
+  const params    = new URLSearchParams(window.location.search);
   const FOLDER_ID = params.get('id') || '1A7qGaUd2HbUU1beyRaVrX75Kk2gIriEO';
 
-  let photos = [];
+  let photos  = [];
   let current = 0;
+
+  function thumbUrl(id) { return `https://drive.google.com/thumbnail?id=${id}&sz=w600`; }
+  function fullUrl(id)  { return `https://drive.google.com/thumbnail?id=${id}&sz=w1600`; }
 
   async function loadGallery() {
     try {
-      // Tenta ler info.txt da pasta
       await loadInfo();
-      // Lista as imagens
       await loadPhotos();
     } catch (e) {
       document.getElementById('status').textContent = 'Erro ao carregar galeria. Verifique se a pasta está compartilhada publicamente.';
@@ -191,35 +213,33 @@
 
   async function loadInfo() {
     const url = `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}'+in+parents+and+name='info.txt'+and+trashed=false&fields=files(id,name)&key=${API_KEY}`;
-    const res = await fetch(url);
+    const res  = await fetch(url);
     const data = await res.json();
     if (data.files && data.files.length > 0) {
-      const fileId = data.files[0].id;
-      const txtRes = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${API_KEY}`);
-      const txt = await txtRes.text();
-      parseInfo(txt);
+      const txtRes = await fetch(`https://www.googleapis.com/drive/v3/files/${data.files[0].id}?alt=media&key=${API_KEY}`);
+      parseInfo(await txtRes.text());
     }
   }
 
   function parseInfo(txt) {
-    const lines = txt.split('\n');
-    for (const line of lines) {
+    for (const line of txt.split('\n')) {
       const [key, ...rest] = line.split(':');
       const value = rest.join(':').trim();
-      if (key.trim().toLowerCase() === 'nome') {
+      const k = key.trim().toLowerCase();
+      if (k === 'nome') {
         document.getElementById('gallery-name').textContent = value;
         document.title = value + ' — MM Fotografia';
       }
-      if (key.trim().toLowerCase() === 'data') {
+      if (k === 'data') {
         document.getElementById('gallery-date').textContent = value;
       }
     }
   }
 
   async function loadPhotos() {
-    const mimeFilter = "mimeType contains 'image/'";
-    const url = `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}'+in+parents+and+${encodeURIComponent(mimeFilter)}+and+trashed=false&fields=files(id,name)&pageSize=1000&key=${API_KEY}`;
-    const res = await fetch(url);
+    const mime = "mimeType+contains+'image/'";
+    const url  = `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}'+in+parents+and+${mime}+and+trashed=false&fields=files(id,name)&pageSize=1000&key=${API_KEY}`;
+    const res  = await fetch(url);
     const data = await res.json();
 
     if (!data.files || data.files.length === 0) {
@@ -228,16 +248,19 @@
     }
 
     photos = data.files;
+
+    // Capa: procura arquivo chamado "capa.jpg/png", senão usa a primeira foto
+    const capaFile = photos.find(f => f.name.toLowerCase().startsWith('capa.'));
+    const capaId   = capaFile ? capaFile.id : photos[0].id;
+    document.getElementById('hero').style.backgroundImage = `url('${fullUrl(capaId)}')`;
+
+    // Fotos da galeria (exclui o arquivo de capa se existir)
+    const galleryPhotos = capaFile ? photos.filter(f => f.id !== capaFile.id) : photos;
+    document.getElementById('photo-count').textContent = `${galleryPhotos.length} fotos`;
+    photos = galleryPhotos;
+
     document.getElementById('status').style.display = 'none';
     renderGallery();
-  }
-
-  function thumbUrl(id) {
-    return `https://drive.google.com/thumbnail?id=${id}&sz=w600`;
-  }
-
-  function fullUrl(id) {
-    return `https://drive.google.com/thumbnail?id=${id}&sz=w1600`;
   }
 
   function renderGallery() {
@@ -274,20 +297,10 @@
   }
 
   document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
-  document.getElementById('lightbox-prev').addEventListener('click', () => {
-    current = (current - 1 + photos.length) % photos.length;
-    updateLightbox();
-  });
-  document.getElementById('lightbox-next').addEventListener('click', () => {
-    current = (current + 1) % photos.length;
-    updateLightbox();
-  });
-
-  document.getElementById('lightbox').addEventListener('click', (e) => {
-    if (e.target === document.getElementById('lightbox')) closeLightbox();
-  });
-
-  document.addEventListener('keydown', (e) => {
+  document.getElementById('lightbox-prev').addEventListener('click', () => { current = (current - 1 + photos.length) % photos.length; updateLightbox(); });
+  document.getElementById('lightbox-next').addEventListener('click', () => { current = (current + 1) % photos.length; updateLightbox(); });
+  document.getElementById('lightbox').addEventListener('click', e => { if (e.target === document.getElementById('lightbox')) closeLightbox(); });
+  document.addEventListener('keydown', e => {
     if (!document.getElementById('lightbox').classList.contains('active')) return;
     if (e.key === 'ArrowRight') { current = (current + 1) % photos.length; updateLightbox(); }
     if (e.key === 'ArrowLeft')  { current = (current - 1 + photos.length) % photos.length; updateLightbox(); }
