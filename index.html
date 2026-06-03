@@ -522,7 +522,7 @@
       position: fixed; top: 0; left: 0; right: 0; z-index: 300;
       padding: 16px 20px;
       display: flex; align-items: center; justify-content: space-between;
-      background: linear-gradient(to bottom, rgba(255,255,255,0.9), transparent);
+      background: linear-gradient(to bottom, rgba(0,0,0,0.65), transparent);
       opacity: 0; transform: translateY(-16px);
       transition: opacity 0.3s ease, transform 0.3s ease;
       pointer-events: none;
@@ -530,8 +530,8 @@
 
     #lb-header.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
 
-    #lb-header .lb-gallery-title { font: 600 1rem 'Montserrat'; color: var(--color-petroleum); display: flex; align-items: center; gap: 8px; }
-    #lb-header .lb-meta { font-size: 0.75rem; color: rgba(5,38,51,0.6); display: flex; gap: 12px; }
+    #lb-header .lb-gallery-title { font: 600 1rem 'Montserrat'; color: white; display: flex; align-items: center; gap: 8px; }
+    #lb-header .lb-meta { font-size: 0.75rem; color: rgba(255,255,255,0.65); display: flex; gap: 12px; }
 
     /* Footer lightbox (aparece no hover) */
     #lb-footer {
