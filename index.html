@@ -3,309 +3,1530 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Galeria MM Fotografia</title>
+  <title>MM Fotografia</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    :root {
+      --color-petroleum:       rgb(5, 38, 51);
+      --color-petroleum-light: rgb(8, 48, 65);
+      --color-petroleum-dark:  rgb(2, 28, 38);
+      --color-champagne:       rgb(243, 229, 171);
+      --color-champagne-hover: rgb(229, 214, 154);
+      --color-luxury-bg:       rgb(248, 249, 250);
+      --color-gold:            rgb(212, 175, 55);
+      --radius-btn:     0.4rem;
+      --radius-card:    0.75rem;
+      --radius-luxury:  8px;
+      --pub-bar-bg:          var(--color-petroleum);
+      --pub-bar-text:        rgba(255,255,255,0.9);
+      --pub-bar-border:      rgba(255,255,255,0.1);
+      --pub-bar-icon:        var(--color-champagne);
+      --pub-bar-cta-bg:      var(--color-champagne);
+      --pub-bar-cta-text:    var(--color-petroleum);
+      --pub-bar-btn-bg:      rgba(255,255,255,0.05);
+      --pub-bar-btn-border:  rgba(255,255,255,0.2);
+    }
 
     body {
-      background: #111;
-      color: #eee;
-      font-family: 'Georgia', serif;
-      min-height: 100vh;
+      font-family: 'Montserrat', 'Inter', sans-serif;
+      background: var(--color-luxury-bg);
+      color: var(--color-petroleum);
+      margin: 0;
     }
 
-    /* CAPA */
+    /* ===== LOADER ===== */
+    #loader {
+      position: fixed; inset: 0; z-index: 99999;
+      background: var(--color-petroleum);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 24px;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+
+    #loader.hidden { opacity: 0; visibility: hidden; }
+
+    #loader .loader-label {
+      font: 600 11px 'Montserrat'; letter-spacing: 0.25em;
+      color: var(--color-champagne); text-transform: uppercase;
+    }
+
+    #loader .loader-ring {
+      position: relative; width: 80px; height: 80px;
+    }
+
+    #loader .loader-ring svg.spin-ring {
+      position: absolute; top: 0; left: 0; width: 80px; height: 80px;
+      animation: spin 1.4s linear infinite;
+    }
+
+    #loader .loader-icon {
+      position: absolute; top: 0; left: 0; width: 80px; height: 80px;
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(243,229,171,0.6);
+    }
+
+    #loader .loader-text {
+      font: 500 10px 'Montserrat'; letter-spacing: 0.2em;
+      color: var(--color-champagne); text-transform: uppercase;
+      font-style: italic;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Seta animada no hero */
+    #hero-arrow {
+      position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+      z-index: 20;
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      opacity: 0; transition: opacity 0.8s ease;
+      pointer-events: none;
+    }
+
+    #hero-arrow.visible { opacity: 1; }
+    #hero-arrow.hidden  { opacity: 0; }
+
+    .hero-arrow-chevron {
+      width: 36px; height: 36px;
+      border-right: 2.5px solid rgba(255,255,255,0.9);
+      border-bottom: 2.5px solid rgba(255,255,255,0.9);
+      transform: rotate(45deg);
+      animation: arrowBounce 1.4s ease-in-out infinite;
+    }
+
+    .hero-arrow-chevron:nth-child(2) { animation-delay: 0.2s; opacity: 0.6; }
+    .hero-arrow-chevron:nth-child(3) { animation-delay: 0.4s; opacity: 0.3; }
+
+    @keyframes arrowBounce {
+      0%, 100% { transform: rotate(45deg) translateY(0); }
+      50%       { transform: rotate(45deg) translateY(8px); }
+    }
+
+    /* ===== HERO ===== */
     #hero {
+      height: 100vh;
+      min-height: 280px;
       position: relative;
-      width: 100%;
-      height: 70vh;
-      min-height: 380px;
-      background: #1a1a1a center/cover no-repeat;
-      display: flex;
-      align-items: flex-end;
-    }
-
-    #hero::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.75) 100%);
-    }
-
-    #hero-content {
-      position: relative;
-      z-index: 1;
-      padding: 40px 48px;
-      width: 100%;
-    }
-
-    #hero-content h1 {
-      font-size: clamp(1.8rem, 5vw, 3.2rem);
-      font-weight: normal;
-      letter-spacing: 0.06em;
-      color: #fff;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
-    }
-
-    #hero-content p {
-      margin-top: 10px;
-      font-size: 1rem;
-      color: rgba(255,255,255,0.75);
-      letter-spacing: 0.08em;
-    }
-
-    #photo-count {
-      margin-top: 6px;
-      font-size: 0.85rem;
-      color: rgba(255,255,255,0.5);
-      letter-spacing: 0.05em;
-      font-family: sans-serif;
-    }
-
-    /* GALERIA */
-    #status {
-      text-align: center;
-      padding: 40px;
-      color: #888;
-      font-size: 0.9rem;
-    }
-
-    .gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 6px;
-      padding: 6px 6px 48px;
-    }
-
-    .gallery-item {
-      aspect-ratio: 3/2;
       overflow: hidden;
-      cursor: pointer;
-      background: #222;
+      background: #000;
+      transition: height 1.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .gallery-item img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s ease, opacity 0.3s ease;
+    #hero.retracted {
+      height: 40vh;
+    }
+
+    .hero-bg {
+      position: absolute; inset: 0;
+      background-size: cover;
+      background-position: center;
+      z-index: 0;
+      transition: opacity 1.5s ease;
+    }
+
+    #hero-bg2 {
+      position: absolute; inset: 0;
+      background-size: cover;
+      background-position: center;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 1.5s ease;
+    }
+
+    .hero-gradient {
+      position: absolute; inset: 0; z-index: 2;
+      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+    }
+
+    .hero-content {
+      position: absolute; inset: 0; z-index: 5;
+      display: flex; flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 2rem 1.5rem 2rem;
+    }
+
+    .hero-content h1 {
+      font: 600 2.5rem 'Montserrat', sans-serif;
+      color: white;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+      display: flex; align-items: center; gap: 0.75rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .hero-content h1 svg { flex-shrink: 0; }
+
+    .hero-underline {
+      height: 3px;
+      background: var(--color-champagne);
+      border-radius: 999px;
+      max-width: 300px;
+      margin-bottom: 1rem;
+    }
+
+    .hero-meta {
+      display: flex; align-items: center; gap: 1rem;
+      color: white; font-size: 14px; font-weight: 500;
+    }
+
+    .hero-meta-sep { width: 1px; height: 12px; background: rgba(255,255,255,0.4); }
+
+    .hero-meta span { display: flex; align-items: center; gap: 5px; }
+
+    /* Badge fotografo */
+    #hero-badge {
+      position: absolute; top: 1.5rem; right: 2rem; z-index: 10;
+      background: rgba(0,0,0,0.5);
+      -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+      border-radius: 0.5rem; padding: 0.5rem 0.75rem;
+      display: flex; align-items: center; gap: 10px;
+      color: rgba(255,255,255,0.9); font-size: 0.72rem; font-weight: 500;
+    }
+
+    #hero-badge .badge-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--color-petroleum);
+      border: 2px solid var(--color-champagne);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: white; flex-shrink: 0;
+    }
+
+    #hero-badge .badge-label { font-size: 0.65rem; opacity: 0.7; display: block; }
+    #hero-badge .badge-name  { font-size: 0.78rem; font-weight: 600; }
+
+    #hero-badge .badge-socials { display: flex; gap: 8px; margin-left: 4px; }
+    #hero-badge .badge-socials a { color: rgba(255,255,255,0.75); font-size: 1rem; text-decoration: none; }
+    #hero-badge .badge-socials a:hover { color: var(--color-champagne); }
+
+    /* Botao expandir */
+    #hero-expand {
+      position: absolute; bottom: 1rem; right: 2rem; z-index: 15;
+      width: 48px; height: 48px; border-radius: 8px;
+      background: rgba(0,0,0,0.6);
+      -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.9); cursor: pointer;
+      display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+    }
+
+    /* ===== TOOLBAR ===== */
+    #toolbar {
+      position: sticky; top: 0; z-index: 100;
+      height: 40px;
+      background: var(--color-petroleum);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+      display: flex; align-items: center;
+      padding: 0 1rem; gap: 0.25rem;
+      overflow-x: auto;
+    }
+
+    #toolbar-title-btn {
+      height: 32px; padding: 0 12px; border-radius: 6px;
+      color: var(--pub-bar-text); background: transparent; border: none;
+      font: 600 12px 'Montserrat', sans-serif; text-transform: uppercase;
+      letter-spacing: 0.05em; cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+      white-space: nowrap; flex-shrink: 0;
+    }
+
+    #toolbar-title-btn svg { color: var(--color-champagne); }
+
+    .toolbar-sep { width: 1px; height: 20px; background: rgba(255,255,255,0.15); margin: 0 4px; flex-shrink: 0; }
+
+    .tb-btn {
+      height: 32px; min-width: 7.25rem; padding: 0 12px;
+      border-radius: 4px; border: 1px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.9);
+      font: 600 10px 'Montserrat', sans-serif; text-transform: uppercase; letter-spacing: 0.08em;
+      background: transparent; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+      display: flex; align-items: center; gap: 8px;
+      transition: background 0.15s, color 0.15s;
+      text-decoration: none;
+    }
+
+    .tb-btn:hover { background: rgba(255,255,255,0.08); }
+    .tb-btn:active { transform: scale(0.95); transition: transform 100ms; }
+    .tb-btn.inactive { opacity: 0.7; }
+
+    /* Dropdown de colunas */
+    #col-dropdown-wrap { position: relative; flex-shrink: 0; }
+
+    #col-dropdown-btn {
+      height: 32px; padding: 0 12px; border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.9);
+      font: 600 10px 'Montserrat', sans-serif; text-transform: uppercase; letter-spacing: 0.08em;
+      cursor: pointer; display: flex; align-items: center; gap: 8px; white-space: nowrap;
+    }
+
+    #col-dropdown-btn svg { transition: transform 0.2s; }
+    #col-dropdown-btn.open svg { transform: rotate(180deg); }
+
+    #col-dropdown-menu {
+      display: none; position: fixed;
+      background: var(--color-petroleum-dark); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 6px; overflow: hidden; z-index: 9999; min-width: 120px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+
+    #col-dropdown-menu.open { display: block; }
+
+    .col-option {
+      display: block; width: 100%; padding: 8px 16px;
+      font: 500 11px 'Montserrat'; text-transform: uppercase; letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.7); background: transparent; border: none;
+      cursor: pointer; text-align: left; transition: background 0.15s, color 0.15s;
+    }
+
+    .col-option:hover { background: rgba(255,255,255,0.08); color: white; }
+    .col-option.active { color: var(--color-champagne); font-weight: 700; }
+
+    .tb-btn-cta {
+      background: var(--color-champagne);
+      color: var(--color-petroleum);
+      border-color: var(--color-champagne);
+      font-weight: 700;
+      box-shadow: 0 10px 25px -5px rgba(243,229,171,0.4);
+    }
+
+    .tb-btn-cta:hover {
+      background: var(--color-champagne-hover);
+      border-color: var(--color-champagne-hover);
+      color: var(--color-petroleum);
+    }
+
+    /* ===== STATUS ===== */
+    #status {
+      text-align: center; padding: 60px 24px;
+      color: rgba(5,38,51,0.4); font-size: 0.9rem;
+    }
+
+    /* ===== GRID MASONRY ===== */
+    #gallery-wrap { padding: 12px 8px 0; width: 100%; }
+
+    #gallery {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-auto-rows: 1px;
+      grid-auto-flow: row dense;
+      gap: 0;
+    }
+
+    #gallery.cols-1 { grid-template-columns: 1fr; }
+    #gallery.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    #gallery.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    #gallery.cols-4 { grid-template-columns: repeat(4, 1fr); }
+    #gallery.cols-5 { grid-template-columns: repeat(5, 1fr); }
+    #gallery.cols-6 { grid-template-columns: repeat(6, 1fr); }
+    #gallery.cols-8 { grid-template-columns: repeat(8, 1fr); }
+
+
+    @media (max-width: 900px) { #gallery { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 600px) { #gallery { grid-template-columns: repeat(2, 1fr); } }
+
+    .photo-item {
+      position: relative; overflow: hidden; padding: 1px; cursor: zoom-in;
+    }
+
+    .photo-img {
+      width: 100%; height: 100%; object-fit: cover;
+      z-index: 10; display: block;
+      transition: transform 0.35s ease, filter 0.3s ease;
       opacity: 0;
     }
 
-    .gallery-item img.loaded { opacity: 1; }
-    .gallery-item:hover img { transform: scale(1.04); }
+    .photo-img.loaded { opacity: 1; }
+    .photo-item:hover .photo-img { transform: scale(1.04); filter: brightness(0.88); }
 
-    /* LIGHTBOX */
-    #lightbox {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.95);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
+    /* Chip nome */
+    .photo-name-chip {
+      position: absolute; top: 8px; right: 8px; z-index: 30;
+      padding: 0 8px; height: 20px;
+      background: rgba(0,0,0,0.2);
+      -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 999px;
+      font-size: 9px; font-weight: 500; color: white;
+      pointer-events: none;
+      display: flex; align-items: center;
     }
 
-    #lightbox.active { display: flex; }
-
-    #lightbox img {
-      max-width: 92vw;
-      max-height: 92vh;
-      object-fit: contain;
+    /* Overlay de botoes no hover */
+    .photo-overlay {
+      position: absolute; bottom: 10px; left: 8px; right: 8px; z-index: 30;
+      display: flex; align-items: center; justify-content: space-between;
+      pointer-events: none;
     }
 
-    #lightbox-close {
-      position: fixed;
-      top: 20px;
-      right: 28px;
-      font-size: 2rem;
-      color: #fff;
-      cursor: pointer;
-      opacity: 0.7;
-      transition: opacity 0.2s;
-      background: none;
-      border: none;
+    .photo-overlay-left  { display: flex; gap: 4px; }
+    .photo-overlay-center { position: absolute; left: 50%; transform: translateX(-50%); }
+    .photo-overlay-right { display: flex; gap: 4px; }
+
+    .photo-overlay-btn {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white; cursor: pointer; font-size: 0.82rem;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transform: scale(0.7) translateY(6px);
+      transition: opacity 0.25s ease, transform 0.25s ease, background 0.15s;
+      pointer-events: auto;
     }
 
-    #lightbox-close:hover { opacity: 1; }
-
-    #lightbox-prev, #lightbox-next {
-      position: fixed;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 2.5rem;
-      color: #fff;
-      cursor: pointer;
-      background: none;
-      border: none;
-      opacity: 0.5;
-      transition: opacity 0.2s;
-      padding: 16px;
-      user-select: none;
+    .photo-item:hover .photo-overlay-btn {
+      opacity: 1; transform: scale(1) translateY(0);
     }
 
-    #lightbox-prev:hover, #lightbox-next:hover { opacity: 1; }
-    #lightbox-prev { left: 8px; }
-    #lightbox-next { right: 8px; }
+    .photo-overlay-btn:nth-child(1) { transition-delay: 0ms; }
+    .photo-overlay-btn:nth-child(2) { transition-delay: 30ms; }
+    .photo-overlay-btn:nth-child(3) { transition-delay: 60ms; }
+    .photo-overlay-btn:nth-child(4) { transition-delay: 90ms; }
 
-    #lightbox-counter {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: #aaa;
-      font-size: 0.85rem;
-      letter-spacing: 0.05em;
+    .photo-overlay-btn:hover { background: rgba(255,255,255,0.35); }
+    .photo-overlay-btn.btn-wa:hover { background: #25D366; border-color: #25D366; }
+    .photo-overlay-btn.btn-fav.active { color: #e74c3c; background: rgba(231,76,60,0.25); }
+    .photo-overlay-btn:active { transform: scale(0.88) !important; }
+
+    /* Lightbox action buttons com tooltip */
+    .lb-act-btn { position: relative; }
+
+    .lb-act-tooltip {
+      position: absolute; right: calc(100% + 10px); top: 50%; transform: translateY(-50%);
+      background: var(--color-petroleum); color: white;
+      font: 600 10px 'Montserrat'; text-transform: uppercase; letter-spacing: 0.06em;
+      padding: 5px 10px; border-radius: 5px; white-space: nowrap;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.15s;
     }
 
+    .lb-act-btn:hover .lb-act-tooltip { opacity: 1; }
+
+    .lb-act-btn.btn-highlight {
+      background: var(--color-petroleum) !important;
+      color: var(--color-champagne) !important;
+    }
+
+    .lb-act-btn.btn-highlight:hover {
+      background: var(--color-petroleum-light) !important;
+    }
+
+    /* ===== FOOTER ===== */
     footer {
+      background: var(--color-petroleum);
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding: 24px 16px;
       text-align: center;
-      padding: 24px;
-      color: #444;
-      font-size: 0.8rem;
-      border-top: 1px solid #222;
+      display: flex; flex-direction: column; align-items: center; gap: 16px;
+      margin-top: 24px;
+    }
+
+    #btn-topo {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: transparent; border: 1px solid rgba(255,255,255,0.3);
+      color: rgba(255,255,255,0.7); cursor: pointer; font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+
+    #btn-topo:hover { background: rgba(255,255,255,0.1); color: white; }
+
+    footer h3 { color: var(--pub-bar-text); font-size: 1.25rem; font-weight: 500; }
+
+    footer .footer-by {
+      color: rgba(255,255,255,0.7); font-style: italic;
+      font-size: 0.85rem;
+    }
+
+    footer .footer-by strong { font-style: normal; font-weight: 700; }
+
+    footer .footer-socials { display: flex; gap: 14px; }
+    footer .footer-socials a { color: rgba(255,255,255,0.6); font-size: 1.1rem; text-decoration: none; }
+    footer .footer-socials a:hover { color: var(--color-champagne); }
+
+    footer .footer-copy {
+      color: rgba(255,255,255,0.4); font-size: 11px; letter-spacing: 0.03em;
+    }
+
+    /* Toast instrução download */
+    #dl-toast {
+      position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+      z-index: 99990;
+      background: var(--color-petroleum);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 10px;
+      padding: 14px 20px;
+      max-width: 340px; width: 90%;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+      display: none;
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+
+    #dl-toast.show { display: block; animation: toastIn 0.3s ease; }
+    #dl-toast.hide { animation: toastOut 0.3s ease forwards; }
+
+    @keyframes toastIn  { from { opacity:0; transform:translateX(-50%) translateY(12px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+    @keyframes toastOut { from { opacity:1; } to { opacity:0; transform:translateX(-50%) translateY(8px); } }
+
+    #dl-toast strong { color: var(--color-champagne); display: block; margin-bottom: 4px; font-size: 0.88rem; }
+    #dl-toast ol { padding-left: 16px; margin-top: 6px; color: rgba(255,255,255,0.8); }
+    #dl-toast ol li { margin-bottom: 2px; }
+
+    /* ===== LIGHTBOX ===== */
+    #lightbox {
+      position: fixed; inset: 0; z-index: 10005;
+      background: white;
+      display: none; overflow: hidden;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+
+    #lightbox.active { display: block; }
+    #lightbox.visible { opacity: 1; }
+
+    /* Area principal foto */
+    #lb-photo-area {
+      position: fixed; inset: 0; z-index: 10;
+      padding-right: 96px;
+      display: flex; align-items: center; justify-content: center;
+      background: white;
+    }
+
+    /* Gradiente que estende a foto até o rodapé */
+    #lb-photo-area::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 120px;
+      background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.6) 40%, white 100%);
+      pointer-events: none;
+      z-index: 5;
+      display: none;
+    }
+
+    #lb-img {
+      max-width: 100%; max-height: 100%;
+      object-fit: contain; display: block;
+      opacity: 0; transform: scale(0.94);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    #lb-img.show { opacity: 1; transform: scale(1); }
+    #lb-img.fade-out { opacity: 0; transform: scale(0.97); }
+    #lb-img.fade-in  { opacity: 1; transform: scale(1); }
+
+    /* Header lightbox (aparece no hover) */
+    #lb-header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+      padding: 16px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.9), transparent);
+      opacity: 0; transform: translateY(-16px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+    }
+
+    #lb-header.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+    #lb-header .lb-gallery-title { font: 600 1rem 'Montserrat'; color: var(--color-petroleum); display: flex; align-items: center; gap: 8px; }
+    #lb-header .lb-meta { font-size: 0.75rem; color: rgba(5,38,51,0.6); display: flex; gap: 12px; }
+
+    /* Footer lightbox (aparece no hover) */
+    #lb-footer {
+      position: fixed; bottom: 0; left: 0; width: 100%; z-index: 250;
+      padding: 12px 16px;
+      display: flex; align-items: flex-end; justify-content: space-between;
+      opacity: 0; transform: translateY(16px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+    }
+
+    #lb-footer.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+    /* Card fotografo no footer do lightbox */
+    #lb-photographer {
+      background: rgba(255,255,255,0.9);
+      -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+      border-radius: 8px; padding: 10px 14px;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    #lb-photographer .ph-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--color-petroleum);
+      display: flex; align-items: center; justify-content: center;
+      font: 700 0.85rem 'Montserrat'; color: var(--color-champagne); flex-shrink: 0;
+    }
+
+    #lb-photographer .ph-label { font-size: 0.62rem; color: rgba(5,38,51,0.5); text-transform: uppercase; letter-spacing: 0.05em; }
+    #lb-photographer .ph-name  { font: 600 0.85rem 'Montserrat'; color: var(--color-petroleum); }
+    #lb-photographer .ph-socials { display: flex; gap: 8px; margin-top: 4px; }
+    #lb-photographer .ph-socials a { color: rgba(5,38,51,0.5); font-size: 0.9rem; text-decoration: none; }
+    #lb-photographer .ph-socials a:hover { color: var(--color-petroleum); }
+
+    /* Contador — footer sticky dentro do painel de thumbs */
+    #lb-counter {
+      flex-shrink: 0;
+      padding: 8px 4px 10px;
+      font-size: 0.72rem; font-weight: 600;
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+      color: rgba(5,38,51,0.55);
+      border-top: 1px solid rgba(0,0,0,0.07);
+      background: white;
+      pointer-events: none;
+    }
+
+    #lb-counter .counter-num { color: var(--color-petroleum); font-weight: 700; }
+
+    /* Botao Fechar X */
+    #lb-close {
+      position: fixed; top: 20px; right: 16px; z-index: 310;
+      width: 48px; height: 48px; border-radius: 8px;
+      background: var(--color-petroleum);
+      -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white; cursor: pointer; font-size: 1.1rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+      opacity: 0; transition: opacity 0.3s;
+    }
+
+    #lb-close.visible { opacity: 1; }
+    #lb-close:hover { background: var(--color-petroleum-light); }
+    #lb-close:active { transform: scale(0.95); }
+
+    /* Painel de Acoes (6 botoes circulares) */
+    #lb-actions {
+      position: fixed; top: 50%; right: 112px; transform: translateY(-50%);
+      z-index: 250;
+      background: rgba(255,255,255,0.95);
+      -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px);
+      border: 1px solid rgba(0,0,0,0.12);
+      border-radius: 8px; padding: 12px;
+      display: flex; flex-direction: column; gap: 12px;
+      opacity: 0; transition: opacity 0.3s;
+      pointer-events: none;
+    }
+
+    #lb-actions.visible { opacity: 1; pointer-events: auto; }
+
+    .lb-act-btn {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: rgba(0,0,0,0.05); border: none;
+      color: var(--color-petroleum); cursor: pointer; font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, color 0.2s, transform 0.1s;
+      text-decoration: none;
+    }
+
+    .lb-act-btn:hover { background: var(--color-petroleum); color: white; }
+    .lb-act-btn:active { transform: scale(0.95); }
+    .lb-act-btn.favorited { color: #e74c3c; }
+    .lb-act-btn.favorited:hover { background: #e74c3c; color: white; }
+
+    /* Painel Thumbnails (direita) */
+    #lb-thumbs-panel {
+      position: fixed; top: 0; right: 0; width: 96px; height: 100vh; z-index: 260;
+      background: rgba(255,255,255,0.97);
+      border-left: 1px solid rgba(0,0,0,0.06);
+      transform: translateX(100%); opacity: 0;
+      transition: transform 0.5s ease-out, opacity 0.5s;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+
+    #lb-thumbs-panel.visible { transform: translateX(0); opacity: 1; }
+
+    /* Área rolável das miniaturas */
+    #lb-thumbs-scroll {
+      flex: 1; overflow-y: auto; overflow-x: hidden;
+      padding: 80px 8px 8px;
+      display: flex; flex-direction: column; gap: 8px;
+      scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.15) transparent;
+    }
+
+    .lb-thumb {
+      width: 100%; height: 74px; border-radius: 8px;
+      object-fit: cover; cursor: pointer; flex-shrink: 0;
+      opacity: 0.7; transition: opacity 0.2s, transform 0.2s, border 0.2s;
+      border: 2px solid transparent;
+    }
+
+    .lb-thumb:hover { opacity: 1; }
+    .lb-thumb.active { opacity: 1; transform: scale(1.05); border-color: var(--color-petroleum); }
+
+    /* Navegacao Prev/Next */
+    #lb-prev, #lb-next {
+      position: fixed; top: 50%; transform: translateY(-50%);
+      width: 48px; height: 48px; border-radius: 50%;
+      background: rgba(255,255,255,0.92);
+      -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+      border: 1px solid rgba(0,0,0,0.1);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      color: var(--color-petroleum); cursor: pointer; font-size: 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 280;
+      opacity: 0; transition: opacity 0.3s, background 0.15s;
+      pointer-events: none;
+    }
+
+    #lb-prev.visible, #lb-next.visible { opacity: 1; pointer-events: auto; }
+    /* Esquerda: colada à borda da foto */
+    #lb-prev { left: 12px; }
+    /* Direita: antes do painel de ações (72px) + thumbs (96px) + gap */
+    #lb-next { right: calc(96px + 80px + 12px); }
+
+    #lb-prev:hover, #lb-next:hover {
+      background: var(--color-petroleum); color: white;
+    }
+    #lb-prev:active, #lb-next:active { transform: translateY(-50%) scale(0.93); }
+
+    /* Popup Alta Resolucao */
+    #lb-popup-hires {
+      position: fixed; bottom: 30%; left: 50%; transform: translateX(-50%);
+      z-index: 400;
+      background: white; border-radius: 8px; padding: 16px 20px;
+      max-width: 340px; width: 90%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      display: none;
+    }
+
+    #lb-popup-hires h4 { font: 700 0.9rem 'Montserrat'; color: var(--color-petroleum); margin-bottom: 6px; }
+    #lb-popup-hires p  { font-size: 0.78rem; color: rgba(5,38,51,0.7); margin-bottom: 12px; }
+
+    .popup-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+    .popup-btn {
+      height: 32px; padding: 0 14px; border-radius: 6px; border: none;
+      font: 600 10px 'Montserrat'; text-transform: uppercase; letter-spacing: 0.05em;
+      cursor: pointer; display: flex; align-items: center; gap: 6px;
+    }
+
+    .popup-btn-primary { background: var(--color-champagne); color: var(--color-petroleum); }
+    .popup-btn-secondary { background: rgba(0,0,0,0.06); color: var(--color-petroleum); }
+
+    /* ===== RESPONSIVE ===== */
+
+    /* Abaixo de 1525px: ações em barra horizontal sobreposta na foto */
+    @media (max-width: 1525px) {
+      /* Foto alinha ao fundo com padding → barra sobrepõe rodapé da foto */
+      #lb-photo-area {
+        padding-right: 96px;
+        align-items: flex-end;
+        padding-bottom: 68px;
+      }
+
+      #lb-actions {
+        top: auto !important; right: auto !important;
+        left: 50% !important; bottom: 14px !important;
+        transform: translateX(-50%) !important;
+        flex-direction: row !important;
+        padding: 10px 16px !important;
+        border-radius: 40px !important;
+        gap: 6px !important;
+        background: rgba(255,255,255,0.88) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        backdrop-filter: blur(16px) !important;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.2) !important;
+        z-index: 290 !important;
+      }
+
+      .lb-act-btn { width: 46px; height: 46px; }
+
+      .lb-act-tooltip {
+        right: auto; left: 50%; transform: translateX(-50%);
+        top: auto; bottom: calc(100% + 8px);
+      }
+
+      #lb-next { right: calc(96px + 12px); }
+      /* Contador permanece no canto direito ao lado dos thumbs */
+    }
+
+    /* Tablet */
+    @media (max-width: 900px) {
+      #lb-thumbs-panel { display: none; }
+      #lb-photo-area { padding-right: 0; }
+      #lb-next { right: 12px; }
+    }
+
+    /* Mobile */
+    @media (max-width: 700px) {
+      .hero-content h1 { font-size: 1.5rem; }
+      .hero-content { padding: 0 16px 16px; }
+      #hero-badge { top: 10px; right: 10px; padding: 6px 10px; }
+
+      #toolbar { gap: 4px; padding: 0 8px; }
+      .tb-btn { min-width: auto; padding: 0 8px; font-size: 9px; }
+      #toolbar-title-btn { font-size: 10px; padding: 0 8px; }
+
+      #lb-prev { left: 8px; width: 40px; height: 40px; font-size: 1.3rem; }
+      #lb-next { right: 8px; width: 40px; height: 40px; font-size: 1.3rem; }
+
+      .lb-act-btn { width: 40px; height: 40px; font-size: 0.85rem; }
+      #lb-actions { padding: 8px 10px; gap: 4px; bottom: 12px; }
+
+      #lb-close { width: 40px; height: 40px; top: 12px; right: 12px; }
+
+      #lb-header { padding: 10px 12px; }
+      #lb-footer { padding: 8px 12px; }
+      #lb-photographer { padding: 8px 10px; }
+
+      #gallery { grid-template-columns: repeat(2, 1fr) !important; }
+    }
+
+    @media (max-width: 400px) {
+      .lb-act-btn { width: 36px; height: 36px; }
+      #lb-actions { gap: 2px; padding: 6px 8px; }
     }
   </style>
 </head>
 <body>
 
-<div id="hero">
-  <div id="hero-content">
-    <h1 id="gallery-name">MM Fotografia</h1>
-    <p id="gallery-date"></p>
-    <p id="photo-count"></p>
+<!-- ===== LOADER ===== -->
+<div id="loader">
+  <div class="loader-label">Sua Galeria</div>
+  <div class="loader-ring">
+    <svg class="spin-ring" viewBox="0 0 80 80" width="80" height="80">
+      <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(243,229,171,0.15)" stroke-width="3"/>
+      <circle cx="40" cy="40" r="34" fill="none" stroke="rgb(243,229,171)" stroke-width="3"
+        stroke-dasharray="60 154" stroke-linecap="round"/>
+    </svg>
+    <div class="loader-icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+        <circle cx="12" cy="13" r="4"/>
+      </svg>
+    </div>
   </div>
+  <div class="loader-text">Preparando sua galeria...</div>
 </div>
 
+<!-- ===== HERO ===== -->
+<section id="hero">
+  <div class="hero-bg" id="hero-bg"></div>
+  <div id="hero-bg2"></div>
+  <div class="hero-gradient"></div>
+
+  <div id="hero-badge">
+    <div class="badge-avatar" id="badge-initial">M</div>
+    <div>
+      <span class="badge-label">Registrado por</span>
+      <span class="badge-name" id="badge-name">MM Fotografia</span>
+    </div>
+    <div class="badge-socials">
+      <a href="https://wa.me/5519992567075?text=Ol%C3%A1%20MMFotografia%2C%20gostaria%20de%20um%20or%C3%A7amento%20para%20meu%20evento" target="_blank"  title="WhatsApp">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      </a>
+      <a href="https://www.instagram.com/mmfotografia.oficial" target="_blank" title="Instagram">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <div id="hero-arrow">
+    <div class="hero-arrow-chevron"></div>
+    <div class="hero-arrow-chevron"></div>
+    <div class="hero-arrow-chevron"></div>
+  </div>
+
+  <button id="hero-expand" title="Expandir/recolher hero">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
+  </button>
+
+  <div class="hero-content">
+    <h1 id="gallery-name">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      <span id="gallery-name-text">MM Fotografia</span>
+    </h1>
+    <div class="hero-underline"></div>
+    <div class="hero-meta">
+      <span id="hero-local" style="display:none">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span id="hero-local-text"></span>
+      </span>
+      <div class="hero-meta-sep" id="sep-local" style="display:none"></div>
+      <span id="hero-date" style="display:none">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span id="hero-date-text"></span>
+      </span>
+      <div class="hero-meta-sep"></div>
+      <span id="hero-count">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        <span id="hero-count-text">– fotos</span>
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TOOLBAR ===== -->
+<nav id="toolbar">
+  <button id="toolbar-title-btn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+    <span id="toolbar-name">GALERIA</span>
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </button>
+
+  <div class="toolbar-sep"></div>
+
+  <div id="col-dropdown-wrap">
+    <button id="col-dropdown-btn">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="4" height="4"/><rect x="10" y="3" width="4" height="4"/><rect x="17" y="3" width="4" height="4"/><rect x="3" y="10" width="4" height="4"/><rect x="10" y="10" width="4" height="4"/><rect x="17" y="10" width="4" height="4"/></svg>
+      <span id="col-label">GRADE 3 COL</span>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div id="col-dropdown-menu">
+      <button class="col-option active" data-cols="3">3 COL</button>
+      <button class="col-option" data-cols="4">4 COL</button>
+      <button class="col-option" data-cols="5">5 COL</button>
+      <button class="col-option" data-cols="6">6 COL</button>
+      <button class="col-option" data-cols="8">8 COL</button>
+    </div>
+  </div>
+
+  <button class="tb-btn inactive" id="tb-panorama" data-cols="1">PANORAMA</button>
+
+  <div class="toolbar-sep"></div>
+
+  <button class="tb-btn" id="tb-favorites">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+    FAVORITAS
+  </button>
+  <button class="tb-btn" id="tb-whatsapp">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    WHATSAPP
+  </button>
+  <button class="tb-btn" id="tb-copy">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+    COPIAR LINK
+  </button>
+  <a class="tb-btn tb-btn-cta" id="tb-download" href="#" target="_blank">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    BAIXAR GALERIA
+  </a>
+</nav>
+
+<!-- STATUS -->
 <div id="status">Carregando galeria...</div>
-<div class="gallery" id="gallery"></div>
 
-<div id="lightbox">
-  <button id="lightbox-close">&#x2715;</button>
-  <button id="lightbox-prev">&#8249;</button>
-  <img id="lightbox-img" src="" alt="" />
-  <button id="lightbox-next">&#8250;</button>
-  <div id="lightbox-counter"></div>
+<!-- GALLERY -->
+<div id="gallery-wrap" style="display:none">
+  <div id="gallery" class="cols-4"></div>
 </div>
 
-<footer>MM Fotografia</footer>
+<!-- FOOTER -->
+<footer>
+  <button id="btn-topo" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
+  </button>
+  <h3 id="footer-name">MM Fotografia</h3>
+  <p class="footer-by">Registrado por <strong id="footer-by-name">MM Fotografia</strong></p>
+  <div class="footer-socials">
+    <a href="#" title="WhatsApp">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    </a>
+    <a href="#" title="Instagram">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+    </a>
+  </div>
+  <p class="footer-copy" id="footer-copy">© 2026 — TODOS OS DIREITOS RESERVADOS</p>
+</footer>
+
+<!-- Toast download -->
+<div id="dl-toast">
+  <strong>⬇ Como baixar todas as fotos em ZIP</strong>
+  <ol>
+    <li>A pasta do Google Drive vai abrir</li>
+    <li>Clique nos <strong>3 pontos</strong> no topo → <strong>"Baixar"</strong></li>
+    <li>O Drive vai gerar e baixar o ZIP automaticamente</li>
+  </ol>
+</div>
+
+<!-- ===== LIGHTBOX ===== -->
+<div id="lightbox">
+
+  <!-- Header (hover) -->
+  <div id="lb-header">
+    <div>
+      <div class="lb-gallery-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <span id="lb-title">Galeria</span>
+      </div>
+      <div class="lb-meta">
+        <span id="lb-meta-date"></span>
+        <span id="lb-meta-local"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Foto principal + setas dentro da área -->
+  <div id="lb-photo-area">
+    <button id="lb-prev" title="Anterior">&#8249;</button>
+    <img id="lb-img" src="" alt="" />
+    <button id="lb-next" title="Próxima">&#8250;</button>
+  </div>
+
+  <!-- Botao Fechar -->
+  <button id="lb-close" title="Fechar (Esc)">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+
+  <!-- Painel de Acoes -->
+  <div id="lb-actions">
+    <button class="lb-act-btn" id="lb-fav">
+      <span class="lb-act-tooltip">Favoritar</span>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+    </button>
+    <button class="lb-act-btn" id="lb-act-wa">
+      <span class="lb-act-tooltip">WhatsApp</span>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    </button>
+    <button class="lb-act-btn" id="lb-act-share">
+      <span class="lb-act-tooltip">Compartilhar</span>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+    </button>
+    <button class="lb-act-btn" id="lb-act-link">
+      <span class="lb-act-tooltip">Copiar link</span>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+    </button>
+    <button class="lb-act-btn" id="lb-act-slideshow">
+      <span class="lb-act-tooltip">Iniciar slideshow</span>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+    </button>
+    <a class="lb-act-btn btn-highlight" id="lb-act-download" href="#" download>
+      <span class="lb-act-tooltip">Baixar</span>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    </a>
+  </div>
+
+  <!-- Painel thumbnails direita -->
+  <div id="lb-thumbs-panel">
+    <div id="lb-thumbs-scroll"></div>
+    <div id="lb-counter">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      <span class="counter-num" id="lb-num">1</span>
+      <span style="color:rgba(5,38,51,0.4)">/</span>
+      <span id="lb-total">1</span>
+    </div>
+  </div>
+
+  <!-- Footer (hover) -->
+  <div id="lb-footer">
+    <div id="lb-photographer">
+      <div class="ph-avatar" id="lb-ph-avatar">M</div>
+      <div>
+        <div class="ph-label">Registrado por</div>
+        <div class="ph-name" id="lb-ph-name">MM Fotografia</div>
+        <div class="ph-socials">
+          <a href="https://wa.me/5519992567075?text=Ol%C3%A1%20MMFotografia%2C%20gostaria%20de%20um%20or%C3%A7amento%20para%20meu%20evento" target="_blank" title="WhatsApp">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          </a>
+          <a href="https://www.instagram.com/mmfotografia.oficial/" target="_blank"  title="Instagram">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
 
 <script>
   const API_KEY   = 'AIzaSyAWszEv-IAHz-D10CFyGaHwmhcUnzjNG44';
-  const params    = new URLSearchParams(window.location.search);
-  const FOLDER_ID = params.get('id') || '1A7qGaUd2HbUU1beyRaVrX75Kk2gIriEO';
+  const urlParams = new URLSearchParams(window.location.search);
+  const FOLDER_ID = urlParams.get('id') || '1A7qGaUd2HbUU1beyRaVrX75Kk2gIriEO';
 
   let photos  = [];
   let current = 0;
+  let numCols = 3;
+  let favSet  = new Set();
 
-  function thumbUrl(id) { return `https://drive.google.com/thumbnail?id=${id}&sz=w600`; }
-  function fullUrl(id)  { return `https://drive.google.com/thumbnail?id=${id}&sz=w1600`; }
+  const thumbUrl = id => `https://drive.google.com/thumbnail?id=${id}&sz=w800`;
+  const fullUrl  = id => `https://drive.google.com/thumbnail?id=${id}&sz=w1400`;
+  const dlUrl    = id => `https://drive.google.com/uc?export=download&id=${id}`;
 
+  const galleryEl = document.getElementById('gallery');
+
+  // ===== INFO =====
   async function loadGallery() {
     try {
       await loadInfo();
       await loadPhotos();
-    } catch (e) {
-      document.getElementById('status').textContent = 'Erro ao carregar galeria. Verifique se a pasta está compartilhada publicamente.';
+    } catch(e) {
+      document.getElementById('status').textContent = 'Erro ao carregar. Verifique se a pasta está pública.';
       console.error(e);
     }
   }
 
   async function loadInfo() {
-    const url = `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}'+in+parents+and+name='info.txt'+and+trashed=false&fields=files(id,name)&key=${API_KEY}`;
-    const res  = await fetch(url);
-    const data = await res.json();
+    const url  = `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}'+in+parents+and+name='info.txt'+and+trashed=false&fields=files(id)&key=${API_KEY}`;
+    const data = await (await fetch(url)).json();
     if (data.files && data.files.length > 0) {
-      const txtRes = await fetch(`https://www.googleapis.com/drive/v3/files/${data.files[0].id}?alt=media&key=${API_KEY}`);
-      parseInfo(await txtRes.text());
+      const txt = await (await fetch(`https://www.googleapis.com/drive/v3/files/${data.files[0].id}?alt=media&key=${API_KEY}`)).text();
+      parseInfo(txt);
     }
   }
 
   function parseInfo(txt) {
+    const info = {};
     for (const line of txt.split('\n')) {
-      const [key, ...rest] = line.split(':');
-      const value = rest.join(':').trim();
-      const k = key.trim().toLowerCase();
-      if (k === 'nome') {
-        document.getElementById('gallery-name').textContent = value;
-        document.title = value + ' — MM Fotografia';
-      }
-      if (k === 'data') {
-        document.getElementById('gallery-date').textContent = value;
-      }
+      const [k, ...rest] = line.split(':');
+      info[k.trim().toLowerCase()] = rest.join(':').trim();
+    }
+    const FOTOGRAFO = 'MM Fotografia';
+    if (info.nome) {
+      // H1 e toolbar mostram o NOME DA GALERIA
+      document.getElementById('gallery-name-text').textContent = info.nome;
+      document.getElementById('toolbar-name').textContent = info.nome.toUpperCase();
+      document.getElementById('lb-title').textContent     = info.nome;
+      document.getElementById('footer-name').textContent  = info.nome;
+      document.title = info.nome + ' — ' + FOTOGRAFO;
+    }
+    // Badge e "registrado por" sempre mostram MM Fotografia
+    document.getElementById('badge-name').textContent      = FOTOGRAFO;
+    document.getElementById('badge-initial').textContent   = FOTOGRAFO.charAt(0);
+    document.getElementById('lb-ph-name').textContent      = FOTOGRAFO;
+    document.getElementById('lb-ph-avatar').textContent    = FOTOGRAFO.charAt(0);
+    document.getElementById('footer-by-name').textContent  = FOTOGRAFO;
+    if (info.data) {
+      document.getElementById('hero-date').style.display = 'flex';
+      document.getElementById('hero-date-text').textContent = info.data;
+      document.getElementById('lb-meta-date').textContent = '📅 ' + info.data;
+    }
+    if (info.local) {
+      document.getElementById('hero-local').style.display = 'flex';
+      document.getElementById('sep-local').style.display = 'block';
+      document.getElementById('hero-local-text').textContent = info.local;
+      document.getElementById('lb-meta-local').textContent = '📍 ' + info.local;
     }
   }
 
+  // ===== PHOTOS =====
   async function loadPhotos() {
     const mime = "mimeType+contains+'image/'";
     const url  = `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}'+in+parents+and+${mime}+and+trashed=false&fields=files(id,name)&pageSize=1000&key=${API_KEY}`;
-    const res  = await fetch(url);
-    const data = await res.json();
+    const data = await (await fetch(url)).json();
 
     if (!data.files || data.files.length === 0) {
-      document.getElementById('status').textContent = 'Nenhuma foto encontrada nesta pasta.';
+      document.getElementById('status').textContent = 'Nenhuma foto encontrada.';
       return;
     }
 
-    photos = data.files;
+    const capaFile  = data.files.find(f => f.name.toLowerCase() === 'capa.jpg' || f.name.toLowerCase() === 'capa.jpeg' || f.name.toLowerCase() === 'capa.png');
+    const capa2File = data.files.find(f => f.name.toLowerCase() === 'capa2.jpg' || f.name.toLowerCase() === 'capa2.jpeg' || f.name.toLowerCase() === 'capa2.png');
+    photos = data.files.filter(f => !f.name.toLowerCase().startsWith('capa'));
 
-    // Capa: procura arquivo chamado "capa.jpg/png", senão usa a primeira foto
-    const capaFile = photos.find(f => f.name.toLowerCase().startsWith('capa.'));
-    const capaId   = capaFile ? capaFile.id : photos[0].id;
-    document.getElementById('hero').style.backgroundImage = `url('${fullUrl(capaId)}')`;
+    const capaId  = capaFile  ? capaFile.id  : (photos.length > 0 ? photos[0].id : null);
+    const capa2Id = capa2File ? capa2File.id : (photos.length > 1 ? photos[1].id : capaId);
 
-    // Fotos da galeria (exclui o arquivo de capa se existir)
-    const galleryPhotos = capaFile ? photos.filter(f => f.id !== capaFile.id) : photos;
-    document.getElementById('photo-count').textContent = `${galleryPhotos.length} fotos`;
-    photos = galleryPhotos;
+    if (capaId) {
+      // Pré-carrega as duas capas
+      const img1 = new Image(), img2 = new Image();
+      img1.src = fullUrl(capaId);
+      img2.src = fullUrl(capa2Id);
+
+      let loaded = 0;
+      const onLoad = () => {
+        loaded++;
+        if (loaded < 2) return; // aguarda as duas
+
+        const bg1 = document.getElementById('hero-bg');
+        const bg2 = document.getElementById('hero-bg2');
+        bg1.style.backgroundImage = `url('${img1.src}')`;
+        bg2.style.backgroundImage = `url('${img2.src}')`;
+
+        // Esconde loader e mostra hero
+        document.getElementById('loader').classList.add('hidden');
+
+        const arrow = document.getElementById('hero-arrow');
+
+        // Sequência: capa1 (tela cheia) → seta aparece → fade para capa2 → fade de volta → retrai
+        // Capa1: 4s → crossfade 1.5s → Capa2: 4s → retrai
+        setTimeout(() => arrow.classList.add('visible'), 400);       // seta aparece
+        setTimeout(() => { bg2.style.opacity = '1'; }, 2000);       // crossfade para capa2
+        setTimeout(() => {                                            // retrai após 2s de capa2
+          arrow.classList.remove('visible');
+          document.getElementById('hero').classList.add('retracted');
+        }, 5500); // 2000 (capa1) + 1500 (transição) + 2000 (capa2)
+      };
+
+      img1.onload = img1.onerror = onLoad;
+      img2.onload = img2.onerror = onLoad;
+    } else {
+      document.getElementById('loader').classList.add('hidden');
+    }
+
+    document.getElementById('hero-count-text').textContent = photos.length + ' fotos';
+    document.getElementById('lb-total').textContent = photos.length;
+    document.getElementById('tb-download').href = `https://drive.google.com/drive/folders/${FOLDER_ID}`;
 
     document.getElementById('status').style.display = 'none';
+    document.getElementById('gallery-wrap').style.display = 'block';
+
     renderGallery();
+    renderThumbs();
   }
 
-  function renderGallery() {
-    const gallery = document.getElementById('gallery');
-    photos.forEach((photo, i) => {
-      const item = document.createElement('div');
-      item.className = 'gallery-item';
-      const img = document.createElement('img');
-      img.src = thumbUrl(photo.id);
-      img.alt = photo.name;
-      img.loading = 'lazy';
-      img.onload = () => img.classList.add('loaded');
-      item.appendChild(img);
-      item.addEventListener('click', () => openLightbox(i));
-      gallery.appendChild(item);
+  // ===== MASONRY GRID =====
+  function setGridSpan(item, img) {
+    const colW = galleryEl.offsetWidth / numCols;
+    const span = Math.round((img.naturalHeight / img.naturalWidth) * colW);
+    item.style.gridRowEnd = 'span ' + Math.max(span, 50);
+  }
+
+  function recalcAll() {
+    document.querySelectorAll('.photo-item').forEach((item, i) => {
+      const img = item.querySelector('.photo-img');
+      if (img.naturalWidth > 0) setGridSpan(item, img);
     });
   }
 
+  function debounce(fn, ms) {
+    let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
+  }
+
+  window.addEventListener('resize', debounce(recalcAll, 200));
+
+  function renderGallery() {
+    photos.forEach((photo, i) => {
+      const item = document.createElement('div');
+      item.className = 'photo-item';
+      item.style.gridRowEnd = 'span 300'; // placeholder
+
+      const img = document.createElement('img');
+      img.className = 'photo-img';
+      img.src = thumbUrl(photo.id);
+      img.alt = photo.name;
+      img.loading = 'lazy';
+
+      img.addEventListener('load', () => {
+        img.classList.add('loaded');
+        setGridSpan(item, img);
+      });
+
+      // Chip nome (nome do arquivo sem extensao)
+      const chip = document.createElement('div');
+      chip.className = 'photo-name-chip';
+      chip.textContent = photo.name.replace(/\.[^/.]+$/, '').slice(0, 20);
+
+      // Overlay botoes
+      const overlay = document.createElement('div');
+      overlay.className = 'photo-overlay';
+
+      // Esquerda: favoritar
+      const leftG = document.createElement('div');
+      leftG.className = 'photo-overlay-left';
+      const btnFav = makeOverlayBtn(svgHeart(), 'Favoritar', () => toggleFavPhoto(i, btnFav));
+      leftG.appendChild(btnFav);
+
+      // Centro: abrir
+      const centerG = document.createElement('div');
+      centerG.className = 'photo-overlay-center';
+      const btnOpen = makeOverlayBtn(svgZoom(), 'Ver foto', () => openLightbox(i));
+      centerG.appendChild(btnOpen);
+
+      // Direita: WA, share, link, download
+      const rightG = document.createElement('div');
+      rightG.className = 'photo-overlay-right';
+      const btnWa  = makeOverlayBtn(svgWA(), 'WhatsApp', () => window.open('https://wa.me/?text=' + encodeURIComponent(window.location.href), '_blank'));
+      btnWa.classList.add('btn-wa');
+      const btnShare = makeOverlayBtn(svgShare(), 'Compartilhar', () => navigator.share ? navigator.share({url: window.location.href}) : navigator.clipboard.writeText(window.location.href));
+      const btnLink  = makeOverlayBtn(svgLink(), 'Copiar link', () => navigator.clipboard.writeText(window.location.href));
+      const btnDl    = makeOverlayBtn(svgDownload(), 'Baixar', () => { const a = document.createElement('a'); a.href = dlUrl(photo.id); a.download = photo.name; a.click(); });
+      rightG.appendChild(btnWa); rightG.appendChild(btnShare); rightG.appendChild(btnLink); rightG.appendChild(btnDl);
+
+      overlay.appendChild(leftG);
+      overlay.appendChild(centerG);
+      overlay.appendChild(rightG);
+
+      item.appendChild(img);
+      item.appendChild(chip);
+      item.appendChild(overlay);
+
+      item.addEventListener('click', e => {
+        if (e.target.closest('.photo-overlay-btn')) return;
+        openLightbox(i);
+      });
+
+      galleryEl.appendChild(item);
+    });
+  }
+
+  function makeOverlayBtn(svgHtml, title, onClick) {
+    const btn = document.createElement('button');
+    btn.className = 'photo-overlay-btn';
+    btn.title = title;
+    btn.innerHTML = svgHtml;
+    btn.addEventListener('click', e => { e.stopPropagation(); onClick(); });
+    return btn;
+  }
+
+  const s = (d, extra='') => `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ${extra}>${d}</svg>`;
+  const svgHeart    = () => s('<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>');
+  const svgZoom     = () => s('<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>');
+  const svgWA       = () => `<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>`;
+  const svgShare    = () => s('<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>');
+  const svgLink     = () => s('<path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>');
+  const svgDownload = () => s('<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>');
+
+  function toggleFavPhoto(i, btn) {
+    if (favSet.has(i)) { favSet.delete(i); btn.textContent = '❤'; btn.style.color = ''; }
+    else { favSet.add(i); btn.textContent = '❤'; btn.style.color = '#e74c3c'; }
+  }
+
+  // ===== COLUMN DROPDOWN =====
+  const colDropBtn  = document.getElementById('col-dropdown-btn');
+  const colDropMenu = document.getElementById('col-dropdown-menu');
+  const colLabel    = document.getElementById('col-label');
+
+  colDropBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    const rect = colDropBtn.getBoundingClientRect();
+    colDropMenu.style.top  = (rect.bottom + 4) + 'px';
+    colDropMenu.style.left = rect.left + 'px';
+    const open = colDropMenu.classList.toggle('open');
+    colDropBtn.classList.toggle('open', open);
+  });
+
+  document.addEventListener('click', () => {
+    colDropMenu.classList.remove('open');
+    colDropBtn.classList.remove('open');
+  });
+
+  document.querySelectorAll('.col-option').forEach(opt => {
+    opt.addEventListener('click', e => {
+      e.stopPropagation();
+      document.querySelectorAll('.col-option').forEach(o => o.classList.remove('active'));
+      opt.classList.add('active');
+      numCols = parseInt(opt.dataset.cols);
+      colLabel.textContent = 'GRADE ' + numCols + ' COL';
+      galleryEl.className = 'cols-' + numCols;
+      colDropMenu.classList.remove('open');
+      colDropBtn.classList.remove('open');
+      setTimeout(recalcAll, 50);
+    });
+  });
+
+  // Panorama
+  document.getElementById('tb-panorama').addEventListener('click', function() {
+    numCols = 1;
+    colLabel.textContent = 'PANORAMA';
+    galleryEl.className = 'cols-1';
+    setTimeout(recalcAll, 50);
+  });
+
+  // ===== TOOLBAR ACTIONS =====
+  // Download galeria — abre Drive + mostra instrução
+  function showDlToast() {
+    const toast = document.getElementById('dl-toast');
+    toast.classList.remove('hide');
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.add('hide');
+      setTimeout(() => toast.classList.remove('show', 'hide'), 300);
+    }, 5000);
+  }
+
+  document.getElementById('tb-download').addEventListener('click', e => {
+    e.preventDefault();
+    window.open(`https://drive.google.com/drive/folders/${FOLDER_ID}`, '_blank');
+    showDlToast();
+  });
+
+  document.getElementById('tb-copy').addEventListener('click', () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      const btn = document.getElementById('tb-copy');
+      const orig = btn.innerHTML;
+      btn.textContent = '✓ COPIADO!';
+      setTimeout(() => btn.innerHTML = orig, 2000);
+    });
+  });
+
+  document.getElementById('tb-whatsapp').addEventListener('click', () => {
+    const msg = encodeURIComponent('Confira a galeria de fotos: ' + galleryUrl());
+    window.open('https://wa.me/?text=' + msg, '_blank');
+  });
+
+  // ===== THUMBNAIL STRIP =====
+  function renderThumbs() {
+    const strip = document.getElementById('lb-thumbs-scroll');
+    photos.forEach((photo, i) => {
+      const img = document.createElement('img');
+      img.src = thumbUrl(photo.id);
+      img.className = 'lb-thumb';
+      img.loading = 'lazy';
+      img.dataset.index = i;
+      img.addEventListener('click', () => { current = i; updateLightbox(); });
+      strip.appendChild(img);
+    });
+  }
+
+  // ===== LIGHTBOX =====
   function openLightbox(index) {
     current = index;
-    updateLightbox();
-    document.getElementById('lightbox').classList.add('active');
+    const lb = document.getElementById('lightbox');
+    lb.classList.add('active');
     document.body.style.overflow = 'hidden';
+
+    // Animação de entrada: fade+scale no lightbox e na imagem
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        lb.classList.add('visible');
+      });
+    });
+
+    updateLightbox(true);
+    showLbControls();
   }
+
+  let slideshowTimer = null;
 
   function closeLightbox() {
-    document.getElementById('lightbox').classList.remove('active');
+    const lb = document.getElementById('lightbox');
+    lb.classList.remove('visible');
+    setTimeout(() => {
+      lb.classList.remove('active');
+      document.getElementById('lb-img').classList.remove('show');
+    }, 350);
     document.body.style.overflow = '';
+    if (slideshowTimer) { clearInterval(slideshowTimer); slideshowTimer = null; }
+    document.getElementById('lb-act-slideshow').classList.remove('btn-highlight');
   }
 
-  function updateLightbox() {
-    document.getElementById('lightbox-img').src = fullUrl(photos[current].id);
-    document.getElementById('lightbox-counter').textContent = `${current + 1} / ${photos.length}`;
+  function updateLightbox(instant = false) {
+    const photo = photos[current];
+    const img = document.getElementById('lb-img');
+
+    if (instant) {
+      img.src = fullUrl(photo.id);
+      img.classList.remove('show');
+      img.onload = () => { requestAnimationFrame(() => img.classList.add('show')); };
+    } else {
+      img.classList.remove('show', 'fade-in');
+      img.classList.add('fade-out');
+      setTimeout(() => {
+        img.src = fullUrl(photo.id);
+        img.classList.remove('fade-out');
+        img.onload = () => { requestAnimationFrame(() => img.classList.add('show')); };
+      }, 280);
+    }
+
+    document.getElementById('lb-act-download').href = dlUrl(photo.id);
+    document.getElementById('lb-num').textContent   = current + 1;
+
+    // Favoritar estado
+    const favBtn = document.getElementById('lb-fav');
+    favBtn.classList.toggle('favorited', favSet.has(current));
+
+    // Thumbnail highlight + scroll
+    document.querySelectorAll('.lb-thumb').forEach((t, i) => {
+      t.classList.toggle('active', i === current);
+    });
+    const activeThumb = document.querySelector('.lb-thumb.active');
+    if (activeThumb) activeThumb.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
 
-  document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
-  document.getElementById('lightbox-prev').addEventListener('click', () => { current = (current - 1 + photos.length) % photos.length; updateLightbox(); });
-  document.getElementById('lightbox-next').addEventListener('click', () => { current = (current + 1) % photos.length; updateLightbox(); });
-  document.getElementById('lightbox').addEventListener('click', e => { if (e.target === document.getElementById('lightbox')) closeLightbox(); });
+  // Hover controls com auto-hide após 3s
+  let hideTimer;
+  const lbControls = ['lb-header', 'lb-footer', 'lb-actions', 'lb-close', 'lb-prev', 'lb-next'];
+
+  function showLbControls() {
+    lbControls.forEach(id => document.getElementById(id).classList.add('visible'));
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(hideLbControls, 3000);
+  }
+
+  function hideLbControls() {
+    lbControls.forEach(id => document.getElementById(id).classList.remove('visible'));
+  }
+
+  document.getElementById('lightbox').addEventListener('mousemove', e => {
+    showLbControls();
+    // Mostrar thumbnails ao hover próximo à borda direita
+    const pct = e.clientX / window.innerWidth;
+    const panel = document.getElementById('lb-thumbs-panel');
+    if (pct > 0.85) panel.classList.add('visible');
+    else panel.classList.remove('visible');
+  });
+
+  // Botoes
+  document.getElementById('lb-close').addEventListener('click', closeLightbox);
+
+  document.getElementById('lb-prev').addEventListener('click', () => {
+    current = (current - 1 + photos.length) % photos.length;
+    updateLightbox();
+  });
+
+  document.getElementById('lb-next').addEventListener('click', () => {
+    current = (current + 1) % photos.length;
+    updateLightbox();
+  });
+
+  document.getElementById('lb-fav').addEventListener('click', () => {
+    const btn = document.getElementById('lb-fav');
+    if (favSet.has(current)) { favSet.delete(current); btn.classList.remove('favorited'); }
+    else { favSet.add(current); btn.classList.add('favorited'); }
+  });
+
+  // URL da galeria (sem parâmetros extras)
+  const galleryUrl = () => window.location.origin + window.location.pathname + window.location.search;
+
+  document.getElementById('lb-act-wa').addEventListener('click', () => {
+    const msg = encodeURIComponent('Confira a galeria de fotos: ' + galleryUrl());
+    window.open('https://wa.me/?text=' + msg, '_blank');
+  });
+
+  document.getElementById('lb-act-share').addEventListener('click', () => {
+    const url = galleryUrl();
+    if (navigator.share) { navigator.share({ title: document.getElementById('lb-gallery-name') ? document.getElementById('lb-gallery-name').textContent : 'Galeria', url }); }
+    else { navigator.clipboard.writeText(url); }
+  });
+
+  document.getElementById('lb-act-link').addEventListener('click', () => {
+    navigator.clipboard.writeText(galleryUrl()).then(() => {
+      const btn = document.getElementById('lb-act-link');
+      btn.classList.add('btn-highlight');
+      setTimeout(() => btn.classList.remove('btn-highlight'), 1500);
+    });
+  });
+
+  document.getElementById('lb-act-slideshow').addEventListener('click', () => {
+    const btn = document.getElementById('lb-act-slideshow');
+    if (slideshowTimer) {
+      clearInterval(slideshowTimer); slideshowTimer = null;
+      btn.classList.remove('btn-highlight');
+    } else {
+      btn.classList.add('btn-highlight');
+      slideshowTimer = setInterval(() => {
+        current = (current + 1) % photos.length;
+        updateLightbox();
+      }, 3000);
+    }
+  });
+
   document.addEventListener('keydown', e => {
     if (!document.getElementById('lightbox').classList.contains('active')) return;
     if (e.key === 'ArrowRight') { current = (current + 1) % photos.length; updateLightbox(); }
     if (e.key === 'ArrowLeft')  { current = (current - 1 + photos.length) % photos.length; updateLightbox(); }
     if (e.key === 'Escape') closeLightbox();
   });
+
+  // Clicar fora da foto fecha
+  document.getElementById('lb-photo-area').addEventListener('click', e => {
+    if (e.target === document.getElementById('lb-photo-area')) closeLightbox();
+  });
+
+  // Hero expand
+  let heroExpanded = false;
+  document.getElementById('hero-expand').addEventListener('click', () => {
+    heroExpanded = !heroExpanded;
+    document.getElementById('hero').style.height = heroExpanded ? '85vh' : '40vh';
+  });
+
+  // Padrão 3 colunas
+  galleryEl.className = 'cols-3';
 
   loadGallery();
 </script>
