@@ -492,7 +492,7 @@
       position: fixed; inset: 0; z-index: 10;
       padding-right: 96px;
       display: flex; align-items: center; justify-content: center;
-      background: white;
+      background: #111;
     }
 
     /* Gradiente que estende a foto até o rodapé */
@@ -753,8 +753,13 @@
 
     /* Mobile */
     @media (max-width: 700px) {
-      .hero-content h1 { font-size: 1.5rem; }
-      .hero-content { padding: 0 16px 2.5rem; }
+      .hero-content h1 { font-size: 1.6rem; }
+      .hero-content { padding: 0 16px 3.5rem; }
+
+      /* Meta em coluna — cada item na própria linha, empurra o título para cima */
+      .hero-meta { flex-direction: column; align-items: flex-start; gap: 0.45rem; }
+      .hero-meta-sep { display: none; }
+      .hero-meta span { font-size: 13px; }
       #hero-badge { top: 10px; right: 10px; padding: 6px 10px; }
 
       /* Toolbar mobile: ícones apenas */
