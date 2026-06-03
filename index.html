@@ -863,20 +863,22 @@
       .lb-act-label { display: block; color: var(--color-petroleum); opacity: 0.65; }
       #lb-act-download .lb-act-label { color: var(--color-champagne); opacity: 0.9; }
 
-      /* Photo area: espaço para a barra de ações fixa na base */
+      /* Photo area: centralizado com espaço para header (56px) e barra de ações (76px) */
       #lb-photo-area {
-        padding-bottom: 88px !important;
+        padding: 56px 0 76px 0 !important;
         align-items: center !important;
       }
 
-      /* Footer com card fotógrafo: acima da barra de ações */
-      #lb-footer {
-        bottom: 84px !important;
-        background: transparent !important;
-        pointer-events: none !important;
+      /* Limita a altura da imagem para não ultrapassar a área visível */
+      #lb-img {
+        max-height: calc(100vh - 56px - 76px) !important;
+        max-width: 100% !important;
       }
 
-      #lb-footer.visible { pointer-events: auto !important; }
+      /* Footer com card fotógrafo: oculto no mobile (info está no header) */
+      #lb-footer {
+        display: none !important;
+      }
 
       /* Prev/Next: maior área de toque */
       #lb-prev, #lb-next { width: 44px !important; height: 44px !important; }
