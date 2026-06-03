@@ -478,7 +478,7 @@
     /* ===== LIGHTBOX ===== */
     #lightbox {
       position: fixed; inset: 0; z-index: 10005;
-      background: white;
+      background: #111;
       display: none; overflow: hidden;
       opacity: 0;
       transition: opacity 0.35s ease;
@@ -754,7 +754,7 @@
     /* Mobile */
     @media (max-width: 700px) {
       .hero-content h1 { font-size: 1.5rem; }
-      .hero-content { padding: 0 16px 16px; }
+      .hero-content { padding: 0 16px 2.5rem; }
       #hero-badge { top: 10px; right: 10px; padding: 6px 10px; }
 
       #toolbar { gap: 4px; padding: 0 8px; }
@@ -892,15 +892,8 @@
         max-width: calc(100vw - 24px) !important;
       }
 
-      /* Avatar: visível na barra */
-      #lb-act-avatar-wrap {
-        display: flex !important;
-        align-items: center;
-        padding-right: 6px;
-        margin-right: 2px;
-        border-right: 1px solid rgba(0,0,0,0.1);
-        flex-shrink: 0;
-      }
+      /* Avatar: oculto na barra mobile */
+      #lb-act-avatar-wrap { display: none !important; }
 
       /* Botões prev/next dentro da barra: visíveis */
       #lb-act-prev-m, #lb-act-next-m { display: flex !important; }
