@@ -763,17 +763,15 @@
       /* Oculta textos, mostra só ícones */
       #toolbar-name, #col-label, .tb-text { display: none !important; }
 
-      /* Oculta seta do dropdown e botão panorama no mobile */
-      #col-dropdown-btn svg:last-child { display: none; }
-      #tb-panorama { display: none; }
+      /* Oculta dropdown de colunas e panorama no mobile (CSS força 2 cols) */
+      #col-dropdown-wrap, #tb-panorama { display: none !important; }
 
       /* Botões compactos — só ícone */
       .tb-btn { min-width: 36px; width: 36px; padding: 0; justify-content: center; }
       #toolbar-title-btn { padding: 0 8px; }
-      #col-dropdown-btn { padding: 0 10px; }
 
-      /* Download CTA: ícone + fundo champagne */
-      #tb-download { width: auto; padding: 0 12px; }
+      /* Download CTA: ícone apenas no mobile */
+      #tb-download { width: 36px; padding: 0; }
 
       #lb-prev { left: 8px; width: 40px; height: 40px; font-size: 1.3rem; }
       #lb-next { right: 8px; width: 40px; height: 40px; font-size: 1.3rem; }
@@ -1496,7 +1494,7 @@
       galleryEl.className = 'cols-' + numCols;
       colDropMenu.classList.remove('open');
       colDropBtn.classList.remove('open');
-      setTimeout(recalcAll, 50);
+      setTimeout(recalcAll, 100);
     });
   });
 
@@ -1505,7 +1503,7 @@
     numCols = 1;
     colLabel.textContent = 'PANORAMA';
     galleryEl.className = 'cols-1';
-    setTimeout(recalcAll, 50);
+    setTimeout(recalcAll, 100);
   });
 
   // ===== TOOLBAR ACTIONS =====
